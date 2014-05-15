@@ -1,0 +1,10 @@
+{
+    "name": "dev-zero",
+    "description": "something",
+    "version": "0.0.1",
+    "private": true,
+    "dependencies": {
+        "irc": "0.3.x",
+        "nedb": "0.10.x"
+    }
+}
