@@ -15,3 +15,4 @@ var db = new Datastore({ filename: config.datafile, autoload: true });
 require('./modules/nickserv.js')(client, config.nickserv);
 
 require('./modules/whale.js')(client, db);
+require('./modules/8ball.js')(client, db);
