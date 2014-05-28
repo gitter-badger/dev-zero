@@ -16,3 +16,4 @@ require('./modules/nickserv.js')(client, config.nickserv);
 
 require('./modules/whale.js')(client, db);
 require('./modules/8ball.js')(client, db);
+require('./modules/urbandictionary.js')(client, db);
