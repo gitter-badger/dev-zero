@@ -8,5 +8,7 @@
         "#server"
     ],
 
-    "datafile" : "data.db"
+    "datafile" : "data.db",
+
+    "nickserv" : "ircbot"
 }

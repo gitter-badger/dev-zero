@@ -12,4 +12,6 @@ client.addListener('error', function(message) {
 var Datastore = require('nedb');
 var db = new Datastore({ filename: config.datafile, autoload: true });
 
+require('./modules/nickserv.js')(client, config.nickserv);
+
 require('./modules/whale.js')(client, db);
