@@ -5,6 +5,7 @@
     "private": true,
     "dependencies": {
         "irc": "0.3.x",
-        "nedb": "0.10.x"
+        "nedb": "0.10.x",
+        "google" : "0.3.x"
     }
 }
