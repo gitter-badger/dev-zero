@@ -27,7 +27,7 @@ var messages = [
 
 module.exports = function(client, db) {
     client.addListener('message', function(from, to, message) {
-        if (!/!8ball/.test(message))
+        if (!/^!8ball/.test(message))
             return;
 
         var n = Math.floor(Math.random() * messages.length);

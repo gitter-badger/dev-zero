@@ -1,6 +1,6 @@
 module.exports = function(client, db) {
     client.addListener('message', function(from, to, message) {
-        if (!/!whale( [0-9]{1,2})?/.test(message))
+        if (!/^!whale( [0-9]{1,2})?/.test(message))
             return;
 
         var length = 5;
