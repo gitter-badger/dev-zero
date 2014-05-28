@@ -12,4 +12,4 @@ client.addListener('error', function(message) {
 var Datastore = require('nedb');
 var db = new Datastore({ filename: config.datafile, autoload: true });
 
-require('./modules/automode.js')(client, db);
+require('./modules/whale.js')(client, db);
