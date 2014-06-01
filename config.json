@@ -2,7 +2,7 @@
     "server" : "localhost",
     "port" : 6667,
 
-    "nick" : "dev-zero",
+    "nick" : "test-bot",
     
     "channels" : [
         "#server",
@@ -11,5 +11,8 @@
 
     "datafile" : "data.db",
 
-    "nickserv" : "ircbot"
+    "nickserv" : "ircbot",
+
+    "commithookport" : 8080,
+    "hooksecret": "oiajfoijawiojoiajiofa"
 }
