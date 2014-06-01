@@ -27,27 +27,31 @@ module.exports = function(client, config) {
 	  				res.end('Invalid secret\n');
 	  				return;
 		  		}
-	        	var data = JSON.parse(body);
+			try {
+	        	    var data = JSON.parse(decodeURIComponent(body.substr(8)));
+                        } catch(e) { console.log(e); return; }
+
 	        	if(service == "github"){
-		        	var e = req.headers['X-GitHub-Event'];
+		        	var e = req.headers['x-github-event'];
+
 		        	if(e == "push"){
-			        	var str = irc.colors.wrap('dark_blue', '[' + reponame + '] ');
-			        	str = str + irc.colors.wrap('orange', data.pusher.name);
-			        	str = str + " pushed " + irc.colors.wrap('dark_blue', data.commits.length);
+			        	var str = irc.colors.wrap('gray', '[' + reponame + '] ');
+			        	str = str + irc.colors.wrap('cyan', data.pusher.name);
+			        	str = str + " pushed " + irc.colors.wrap('gray', data.commits.length);
 			        	str = str + " commit";
 			        	if(data.commits.length != 1){
 			        		str = str + "s";
 			        	}
 			        	str = str + " to ";
-			        	str = str + irc.colors.wrap('dark_green', data.ref.substr(11)) + " ";
+			        	str = str + irc.colors.wrap('light_red', data.ref.substr(11)) + " ";
 			        	str = str + data.compare;
 			        	client.say("#server", str);
 
 			        	for(var i = 0; i < data.commits.length; i++){
 			        		var c = data.commits[i];
-			        		str = irc.colors.wrap('dark_blue', '[' + reponame + '] ');
-			        		str = str + irc.colors.wrap('orange', c.committer.name) + " ";
-			        		str = str + irc.colors.wrap('dark_green', c.id.substr(0, 7)) + " - " + c.message;
+			        		str = irc.colors.wrap('gray', '[' + reponame + '] ');
+			        		str = str + irc.colors.wrap('cyan', c.committer.name) + " ";
+			        		str = str + irc.colors.wrap('orange', c.id.substr(0, 7)) + " - " + c.message.replace(/\+/g, ' ');
 			        		client.say("#server", str);
 			        	}
 		        	}
