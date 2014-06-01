@@ -18,4 +18,4 @@ require('./modules/whale.js')(client, db);
 require('./modules/8ball.js')(client, db);
 require('./modules/urbandictionary.js')(client, db);
 require('./modules/google.js')(client, db);
-require('./modules/commithook.js')(client, config.commithookport);
+require('./modules/commithook.js')(client, config);

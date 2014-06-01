@@ -12,5 +12,6 @@
 
     "nickserv" : "ircbot",
 
-    "commithookport" : 8080
+    "commithookport" : 8080,
+    "hooksecret": "oiajfoijawiojoiajiofa"
 }

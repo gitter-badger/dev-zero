@@ -1,7 +1,7 @@
 var http = require('http');
 var irc = require('irc');
 
-module.exports = function(client, port) {
+module.exports = function(client, config) {
     http.createServer(function (req, res) {
     	if(req.method == "POST"){
 			var body = '';
@@ -18,8 +18,15 @@ module.exports = function(client, port) {
 		  		res.writeHead(200, {'Content-Type': 'text/plain'});
 		  		res.end('OK\n');
 
-		  		var service = req.url.substr(1, 7);
-		  		var reponame = req.url.substr(8);
+		  		//This is a very hacky way for checking the secret. Maybe replace it with some kind of regex / string split?
+		  		var secret = req.url.substr(1, config.hooksecret.length);
+		  		var service = req.url.substr(config.hooksecret.length + 2, 6);
+		  		var reponame = req.url.substr(config.hooksecret.length + 9);
+		  		if(secret != config.hooksecret){
+	            	res.writeHead(403, {'Content-Type': 'text/plain'})
+	  				res.end('Invalid secret\n');
+	  				return;
+		  		}
 	        	var data = JSON.parse(body);
 	        	if(service == "github"){
 		        	var e = req.headers['X-GitHub-Event'];
@@ -50,5 +57,5 @@ module.exports = function(client, port) {
 	  		res.writeHead(405, {'Content-Type': 'text/plain'});
 	  		res.end('Method not allowed\n');
     	}
-	}).listen(port, "0.0.0.0");
+	}).listen(config.commithookport, "0.0.0.0");
 };
