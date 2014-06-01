@@ -1,11 +1,12 @@
 {
-    "server" : "irc.reening.nl",
+    "server" : "localhost",
     "port" : 6667,
 
     "nick" : "dev-zero",
     
     "channels" : [
-        "#server"
+        "#server",
+	"#tracker"
     ],
 
     "datafile" : "data.db",
