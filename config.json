@@ -2,7 +2,7 @@
     "server" : "localhost",
     "port" : 6667,
 
-    "nick" : "test-bot",
+    "nick" : "dev-zero",
     
     "channels" : [
         "#server",
