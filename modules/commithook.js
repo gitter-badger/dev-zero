@@ -1,6 +1,7 @@
 var http = require('http');
 var irc = require('irc');
 var crypto = require('crypto');
+var querystring = require('querystring');
 
 module.exports = function(client, config) {
     http.createServer(function (req, res) {
@@ -43,74 +44,96 @@ module.exports = function(client, config) {
 		        	var e = req.headers['x-github-event'];
 					
 		        	if(e == "push"){
-			        	var str = irc.colors.wrap('gray', '[' + reponame + '] ');
-			        	str = str + irc.colors.wrap('cyan', data.pusher.name);
-			        	str = str + " pushed " + irc.colors.wrap('gray', data.commits.length);
-			        	str = str + " commit";
-			        	if(data.commits.length != 1){
-			        		str = str + "s";
-			        	}
-			        	str = str + " to ";
-			        	str = str + irc.colors.wrap('light_red', data.ref.substr(11)) + " ";
-			        	str = str + data.compare;
-			        	client.say("#server", str);
+			        	shortenUrl(data.compare, function(shortened){
+				        	var str = irc.colors.wrap('gray', '[' + reponame + '] ');
+				        	str = str + irc.colors.wrap('cyan', data.pusher.name);
+				        	str = str + " pushed " + irc.colors.wrap('gray', data.commits.length);
+				        	str = str + " commit";
+				        	if(data.commits.length != 1){
+				        		str = str + "s";
+				        	}
+				        	str = str + " to ";
+				        	str = str + irc.colors.wrap('light_red', data.ref.substr(11)) + " ";
+				        	str = str + shortened;
+				        	client.say("#server", str);
 
-			        	for(var i = 0; i < data.commits.length; i++){
-			        		var c = data.commits[i];
-			        		str = irc.colors.wrap('gray', '[' + reponame + '] ');
-			        		str = str + irc.colors.wrap('cyan', c.committer.name) + " ";
-			        		str = str + irc.colors.wrap('orange', c.id.substr(0, 7)) + " - " + c.message.replace(/\+/g, ' ');
-			        		client.say("#server", str);
-			        	}
+				        	for(var i = 0; i < data.commits.length; i++){
+				        		var c = data.commits[i];
+				        		str = irc.colors.wrap('gray', '[' + reponame + '] ');
+				        		str = str + irc.colors.wrap('cyan', c.committer.name) + " ";
+				        		str = str + irc.colors.wrap('orange', c.id.substr(0, 7)) + " - " + c.message.replace(/\+/g, ' ');
+				        		client.say("#server", str);
+				        	}
+			        	});
 		        	}else if(e == "ping"){
 			        	var str = irc.colors.wrap('gray', '[' + reponame + '] ') + irc.colors.wrap('cyan', '[GitHub] ') + data.zen;
 			        	client.say("#server", str);
 		        	}else if(e == "issues"){
-			        	var str = irc.colors.wrap('gray', '[' + reponame + '] ');
-			        	str = str + irc.colors.wrap('cyan', data.sender.login) + ' ' + data.action + ' issue ' + irc.colors.wrap('orange', '#' + data.issue.number) + ': ' + data.issue.title + ' - ' + data.issue.html_url;
-			        	client.say("#server", str);
+			        	shortenUrl(data.issue.html_url, function(shortened){
+				        	var str = irc.colors.wrap('gray', '[' + reponame + '] ');
+				        	str = str + irc.colors.wrap('cyan', data.sender.login) + ' ' + data.action + ' issue ' + irc.colors.wrap('orange', '#' + data.issue.number) + ': ' + data.issue.title + ' - ' + shortened;
+				        	client.say("#server", str);
+			        	});
 		        	}else if(e == "issue_comment"){
-			        	var str = irc.colors.wrap('gray', '[' + reponame + '] ');
-			        	str = str + irc.colors.wrap('cyan', data.sender.login) + ' commented on issue ' + irc.colors.wrap('orange', '#' + data.issue.number) + ': ' + data.issue.title + ' - ' + data.comment.html_url;
-			        	client.say("#server", str);
+			        	shortenUrl(data.comment.html_url, function(shortened){
+				        	var str = irc.colors.wrap('gray', '[' + reponame + '] ');
+				        	str = str + irc.colors.wrap('cyan', data.sender.login) + ' commented on issue ' + irc.colors.wrap('orange', '#' + data.issue.number) + ': ' + data.issue.title + ' - ' + shortened;
+				        	client.say("#server", str);
+			        	});
 		        	}else if(e == "commit_comment"){
-			        	var str = irc.colors.wrap('gray', '[' + reponame + '] ');
-			        	str = str + irc.colors.wrap('cyan', data.sender.login) + ' commented on commit ' + irc.colors.wrap('orange', data.commit_id.substr(0, 7)) + ' - ' + data.comment.html_url;
-			        	client.say("#server", str);
+			        	shortenUrl(data.comment.html_url, function(shortened){
+				        	var str = irc.colors.wrap('gray', '[' + reponame + '] ');
+				        	str = str + irc.colors.wrap('cyan', data.sender.login) + ' commented on commit ' + irc.colors.wrap('orange', data.comment.commit_id.substr(0, 7)) + ' - ' + shortened;
+				        	client.say("#server", str);
+			        	});
 		        	}else if(e == "create"){
-			        	var str = irc.colors.wrap('gray', '[' + reponame + '] ');
-			        	str = str + irc.colors.wrap('cyan', data.sender.login) + ' created ' + data.ref_type;
-			        	if(data['ref']){
-			        		str = str + ' ' + irc.colors.wrap('orange', data.ref);
-			        	}
-			        	str = str + ' - ' + data.repository.url;
-			        	client.say("#server", str);
+			        	shortenUrl(data.repository.url, function(shortened){
+				        	var str = irc.colors.wrap('gray', '[' + reponame + '] ');
+				        	str = str + irc.colors.wrap('cyan', data.sender.login) + ' created ' + data.ref_type;
+				        	if(data['ref']){
+				        		str = str + ' ' + irc.colors.wrap('orange', data.ref);
+				        	}
+				        	str = str + ' - ' + shortened;
+				        	client.say("#server", str);
+			        	});
 		        	}else if(e == "delete"){
-			        	var str = irc.colors.wrap('gray', '[' + reponame + '] ');
-			        	str = str + irc.colors.wrap('cyan', data.sender.login) + ' deleted ' + data.ref_type + ' ' + irc.colors.wrap('orange', data.ref) + ' - ' + data.repository.html_url;
-			        	client.say("#server", str);
+			        	shortenUrl(data.repository.html_url, function(shortened){
+				        	var str = irc.colors.wrap('gray', '[' + reponame + '] ');
+				        	str = str + irc.colors.wrap('cyan', data.sender.login) + ' deleted ' + data.ref_type + ' ' + irc.colors.wrap('orange', data.ref) + ' - ' + shortened;
+				        	client.say("#server", str);
+			        	});
 		        	}else if(e == "pull_request"){
-			        	var str = irc.colors.wrap('gray', '[' + reponame + '] ');
-			        	str = str + irc.colors.wrap('cyan', data.sender.login) + ' ' + data.action ' pull request ' + irc.colors.wrap('orange', '#' + data.num) + ': ' + data.title + ' - ' + data.pull_request.html_url;
-			        	client.say("#server", str);
+			        	shortenUrl(data.pull_request.html_url, function(shortened){
+				        	var str = irc.colors.wrap('gray', '[' + reponame + '] ');
+				        	str = str + irc.colors.wrap('cyan', data.sender.login) + ' ' + data.action + ' pull request ' + irc.colors.wrap('orange', '#' + data.num) + ': ' + data.title + ' - ' + shortened;
+				        	client.say("#server", str);
+			        	});
 		        	}else if(e == "pull_request_review_comment"){
-			        	var str = irc.colors.wrap('gray', '[' + reponame + '] ');
-			        	str = str + irc.colors.wrap('cyan', data.sender.login) + ' reviewed pull request ' + irc.colors.wrap('orange', '#' + data.num) + ' commit - ' + data.comment.html_url;
-			        	client.say("#server", str);
+			        	shortenUrl(data.comment.html_url, function(shortened){
+				        	var str = irc.colors.wrap('gray', '[' + reponame + '] ');
+				        	str = str + irc.colors.wrap('cyan', data.sender.login) + ' reviewed pull request ' + irc.colors.wrap('orange', '#' + data.num) + ' commit - ' + shortened;
+				        	client.say("#server", str);
+			        	});
 		        	}else if(e == "gollum"){
 			        	client.say("#server", "Someone updated a wiki. I don't know how to format this yet. Please go bug jk-5 about this");
 		        	}else if(e == "watch"){
-			        	var str = irc.colors.wrap('gray', '[' + reponame + '] ');
-			        	str = str + irc.colors.wrap('cyan', data.sender.login) + ' starred ' + irc.colors.wrap('cyan', data.repository.name) + ' - ' + data.sender.html_url;
-			        	client.say("#server", str);
+			        	shortenUrl(data.sender.html_url, function(shortened){
+				        	var str = irc.colors.wrap('gray', '[' + reponame + '] ');
+				        	str = str + irc.colors.wrap('cyan', data.sender.login) + ' starred ' + irc.colors.wrap('cyan', data.repository.name) + ' - ' + shortened;
+				        	client.say("#server", str);
+			        	});
 		        	}else if(e == "release"){
-			        	var str = irc.colors.wrap('gray', '[' + reponame + '] ');
-			        	str = str + irc.colors.wrap('cyan', data.sender.login) + ' ' + data.action + ' ' + irc.colors.wrap('cyan', data.release.tag_name + ' | ' + data.release.name) + ' - ' + data.release.html_url;
-			        	client.say("#server", str);
+			        	shortenUrl(data.release.html_url, function(shortened){
+				        	var str = irc.colors.wrap('gray', '[' + reponame + '] ');
+				        	str = str + irc.colors.wrap('cyan', data.sender.login) + ' ' + data.action + ' ' + irc.colors.wrap('cyan', data.release.tag_name + ' | ' + data.release.name) + ' - ' + shortened;
+				        	client.say("#server", str);
+			        	});
 		        	}else if(e == "fork"){
-			        	var str = irc.colors.wrap('gray', '[' + reponame + '] ');
-			        	str = str + irc.colors.wrap('cyan', data.sender.login) + ' forked the repository - ' + data.forkee.owner.html_url;
-			        	client.say("#server", str);
+			        	shortenUrl(data.forkee.owner.html_url, function(shortened){
+				        	var str = irc.colors.wrap('gray', '[' + reponame + '] ');
+				        	str = str + irc.colors.wrap('cyan', data.sender.login) + ' forked the repository - ' + shortened;
+				        	client.say("#server", str);
+			        	});
 		        	}
 	        	}
 	        });
@@ -120,3 +143,43 @@ module.exports = function(client, config) {
     	}
 	}).listen(config.commithookport, "0.0.0.0");
 };
+
+function shortenUrl(url, callback){
+	var done = false;
+	try{
+		var data = querystring.stringify({
+			'url': url
+		});
+		var options = {
+			host: 'git.io',
+			port: '80',
+			path: '/',
+			method: 'POST',
+			headers: {
+				'Content-Type': 'application/x-www-form-urlencoded',
+				'Content-Length': data.length
+			}
+		};
+		var req = http.request(options, function(res){
+			console.log(res.statusCode);
+			done = true;
+			if(res.statusCode == 100) return;
+			if(res.statusCode != 201){ //Something is wrong. Return the old url
+				callback(url);
+			}else{
+				callback(res.headers.location);
+			}
+		});
+		req.on('socket', function(socket){
+			socket.setTimeout(4000); //Use a short socket timeout for fast messages when something derps up.
+			socket.on('timeout', function(){
+				req.abort();
+				if(!done) callback(url);
+			})
+		})
+		req.write(data);
+		req.end();
+	}catch(e){
+		if(!done) callback(url);
+	}
+}
