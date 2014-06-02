@@ -1,5 +1,6 @@
 var http = require('http');
 var irc = require('irc');
+var crypto = require('crypto');
 
 module.exports = function(client, config) {
     http.createServer(function (req, res) {
@@ -18,15 +19,17 @@ module.exports = function(client, config) {
 		  		res.writeHead(200, {'Content-Type': 'text/plain'});
 		  		res.end('OK\n');
 
-		  		//This is a very hacky way for checking the secret. Maybe replace it with some kind of regex / string split?
-		  		var secret = req.url.substr(1, config.hooksecret.length);
-		  		var service = req.url.substr(config.hooksecret.length + 2, 6);
-		  		var reponame = req.url.substr(config.hooksecret.length + 9);
-		  		if(secret != config.hooksecret){
+		  		var sentSecret = req.headers['x-hub-signature'].substr(5);
+		  		var realSecret = crypto.createHmac('sha1', config.hooksecret).update(body).digest('hex');
+
+		  		if(sentSecret != realSecret){
 	            	res.writeHead(403, {'Content-Type': 'text/plain'})
 	  				res.end('Invalid secret\n');
 	  				return;
 		  		}
+
+		  		var service = req.url.substr(1, 6);
+		  		var reponame = req.url.substr(8);
 
 	        	if(service == "github"){
 	        		var data;
@@ -38,7 +41,7 @@ module.exports = function(client, config) {
 		                }catch(e){ console.log(e); return; }
 	        		}
 		        	var e = req.headers['x-github-event'];
-
+					
 		        	if(e == "push"){
 			        	var str = irc.colors.wrap('gray', '[' + reponame + '] ');
 			        	str = str + irc.colors.wrap('cyan', data.pusher.name);
