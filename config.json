@@ -1,8 +1,8 @@
 {
-    "server" : "irc.reening.nl",
+    "server" : "localhost",
     "port" : 6667,
 
-    "nick" : "testbot",
+    "nick" : "dev-zero",
     
     "channels" : [
         "#server",
