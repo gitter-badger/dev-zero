@@ -27,11 +27,16 @@ module.exports = function(client, config) {
 	  				res.end('Invalid secret\n');
 	  				return;
 		  		}
-			try {
-	        	    var data = JSON.parse(decodeURIComponent(body.substr(8)));
-                        } catch(e) { console.log(e); return; }
 
 	        	if(service == "github"){
+	        		var data;
+	        		if(req.headers['content-type'] == "application/json"){
+	        			data = JSON.parse(body);
+	        		}else{
+						try{
+			        	    data = JSON.parse(decodeURIComponent(body.substr(8)));
+		                }catch(e){ console.log(e); return; }
+	        		}
 		        	var e = req.headers['x-github-event'];
 
 		        	if(e == "push"){
