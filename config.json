@@ -2,7 +2,7 @@
     "server" : "localhost",
     "port" : 6667,
 
-    "nick" : "dev-zero",
+    "nick" : "TeeVee",
     
     "channels" : [
         "#server",
