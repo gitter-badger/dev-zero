@@ -6,7 +6,7 @@
     
     "channels" : [
         "#server",
-	   "#tracker"
+        "#tracker"
     ],
 
     "datafile" : "data.db",
