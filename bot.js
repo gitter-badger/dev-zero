@@ -20,4 +20,5 @@ require('./modules/urbandictionary.js')(client, db);
 require('./modules/google.js')(client, db);
 require('./modules/flirt.js')(client, db);
 require('./modules/equip.js')(client, db);
+require('./modules/timer.js')(client, db);
 require('./modules/commithook.js')(client, config);
