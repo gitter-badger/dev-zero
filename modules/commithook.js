@@ -5,8 +5,13 @@ var querystring = require('querystring');
 
 module.exports = function(client, config) {
     http.createServer(function (req, res) {
+        req.on('error', function(error) {
+            console.error('commithook error: ' + error);
+        });
+
         if(req.method == "POST"){
             var body = '';
+
             req.on('data', function(data){
                 body += data;
                 //In case of very big data, kill the request so it won't kill us
