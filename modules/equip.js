@@ -5,7 +5,10 @@ module.exports = function(client, db) {
         if (!/^!equip /.test(message))
             return;
 
-        players[from] = message.substr(7);
+        var weapon = message.substr(7);
+        players[from] = weapon
+
+        client.say(to, from + ' equips ' + weapon);
     });
 
     client.addListener('message', function(from, to, message) {
