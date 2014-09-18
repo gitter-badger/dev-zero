@@ -22,3 +22,4 @@ require('./modules/flirt.js')(client, db);
 require('./modules/equip.js')(client, db);
 require('./modules/timer.js')(client, db);
 require('./modules/commithook.js')(client, config);
+require('./modules/mcpmappings.js')(client);
