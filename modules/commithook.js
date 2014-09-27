@@ -44,7 +44,7 @@ module.exports = function(client, config) {
                             res.end('Please use application/json as the content type on GitHub.\n');
                         }
                         var e = req.headers['x-github-event'];
-                        var channel = "#thespacebar"
+                        var channel = "#thespacebar";
                         
                         if(e == "push"){
                             shortenUrl(data.compare, function(shortened){
