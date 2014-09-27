@@ -44,6 +44,7 @@ module.exports = function(client, config) {
                             res.end('Please use application/json as the content type on GitHub.\n');
                         }
                         var e = req.headers['x-github-event'];
+                        var channel = "#thespacebar"
                         
                         if(e == "push"){
                             shortenUrl(data.compare, function(shortened){
@@ -57,36 +58,36 @@ module.exports = function(client, config) {
                                 str = str + " to ";
                                 str = str + irc.colors.wrap('light_red', data.ref.substr(11)) + " ";
                                 str = str + shortened;
-                                client.say("#server", str);
+                                client.say(channel, str);
 
                                 for(var i = 0; i < data.commits.length; i++){
                                     var c = data.commits[i];
                                     str = irc.colors.wrap('gray', '[' + reponame + '] ');
                                     str = str + irc.colors.wrap('cyan', c.committer.name) + " ";
                                     str = str + irc.colors.wrap('orange', c.id.substr(0, 7)) + " - " + c.message;
-                                    client.say("#server", str);
+                                    client.say(channel, str);
                                 }
                             });
                         }else if(e == "ping"){
                             var str = irc.colors.wrap('gray', '[' + reponame + '] ') + irc.colors.wrap('cyan', '[GitHub] ') + data.zen;
-                            client.say("#server", str);
+                            client.say(channel, str);
                         }else if(e == "issues"){
                             shortenUrl(data.issue.html_url, function(shortened){
                                 var str = irc.colors.wrap('gray', '[' + reponame + '] ');
                                 str = str + irc.colors.wrap('cyan', data.sender.login) + ' ' + data.action + ' issue ' + irc.colors.wrap('orange', '#' + data.issue.number) + ': ' + data.issue.title + ' - ' + shortened;
-                                client.say("#server", str);
+                                client.say(channel, str);
                             });
                         }else if(e == "issue_comment"){
                             shortenUrl(data.comment.html_url, function(shortened){
                                 var str = irc.colors.wrap('gray', '[' + reponame + '] ');
                                 str = str + irc.colors.wrap('cyan', data.sender.login) + ' commented on issue ' + irc.colors.wrap('orange', '#' + data.issue.number) + ': ' + data.issue.title + ' - ' + shortened;
-                                client.say("#server", str);
+                                client.say(channel, str);
                             });
                         }else if(e == "commit_comment"){
                             shortenUrl(data.comment.html_url, function(shortened){
                                 var str = irc.colors.wrap('gray', '[' + reponame + '] ');
                                 str = str + irc.colors.wrap('cyan', data.sender.login) + ' commented on commit ' + irc.colors.wrap('orange', data.comment.commit_id.substr(0, 7)) + ' - ' + shortened;
-                                client.say("#server", str);
+                                client.say(channel, str);
                             });
                         }else if(e == "create"){
                             shortenUrl(data.repository.url, function(shortened){
@@ -96,45 +97,45 @@ module.exports = function(client, config) {
                                     str = str + ' ' + irc.colors.wrap('orange', data.ref);
                                 }
                                 str = str + ' - ' + shortened;
-                                client.say("#server", str);
+                                client.say(channel, str);
                             });
                         }else if(e == "delete"){
                             shortenUrl(data.repository.html_url, function(shortened){
                                 var str = irc.colors.wrap('gray', '[' + reponame + '] ');
                                 str = str + irc.colors.wrap('cyan', data.sender.login) + ' deleted ' + data.ref_type + ' ' + irc.colors.wrap('orange', data.ref) + ' - ' + shortened;
-                                client.say("#server", str);
+                                client.say(channel, str);
                             });
                         }else if(e == "pull_request"){
                             shortenUrl(data.pull_request.html_url, function(shortened){
                                 var str = irc.colors.wrap('gray', '[' + reponame + '] ');
                                 str = str + irc.colors.wrap('cyan', data.sender.login) + ' ' + data.action + ' pull request ' + irc.colors.wrap('orange', '#' + data.num) + ': ' + data.title + ' - ' + shortened;
-                                client.say("#server", str);
+                                client.say(channel, str);
                             });
                         }else if(e == "pull_request_review_comment"){
                             shortenUrl(data.comment.html_url, function(shortened){
                                 var str = irc.colors.wrap('gray', '[' + reponame + '] ');
                                 str = str + irc.colors.wrap('cyan', data.sender.login) + ' reviewed pull request ' + irc.colors.wrap('orange', '#' + data.num) + ' commit - ' + shortened;
-                                client.say("#server", str);
+                                client.say(channel, str);
                             });
                         }else if(e == "gollum"){
-                            client.say("#server", "Someone updated a wiki. I don't know how to format this yet. Please go bug jk-5 about this");
+                            client.say(channel, "Someone updated a wiki. I don't know how to format this yet. Please go bug jk-5 about this");
                         }else if(e == "watch"){
                             shortenUrl(data.sender.html_url, function(shortened){
                                 var str = irc.colors.wrap('gray', '[' + reponame + '] ');
                                 str = str + irc.colors.wrap('cyan', data.sender.login) + ' starred ' + irc.colors.wrap('cyan', data.repository.name) + ' - ' + shortened;
-                                client.say("#server", str);
+                                client.say(channel, str);
                             });
                         }else if(e == "release"){
                             shortenUrl(data.release.html_url, function(shortened){
                                 var str = irc.colors.wrap('gray', '[' + reponame + '] ');
                                 str = str + irc.colors.wrap('cyan', data.sender.login) + ' ' + data.action + ' ' + irc.colors.wrap('cyan', data.release.tag_name + ' | ' + data.release.name) + ' - ' + shortened;
-                                client.say("#server", str);
+                                client.say(channel, str);
                             });
                         }else if(e == "fork"){
                             shortenUrl(data.forkee.owner.html_url, function(shortened){
                                 var str = irc.colors.wrap('gray', '[' + reponame + '] ');
                                 str = str + irc.colors.wrap('cyan', data.sender.login) + ' forked the repository - ' + shortened;
-                                client.say("#server", str);
+                                client.say(channel, str);
                             });
                         }
                     }
